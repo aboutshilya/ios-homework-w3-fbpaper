@@ -121,31 +121,22 @@
     [self.sectionView removeGestureRecognizer:self.panGesture];
     [UIView animateWithDuration:0.5 delay:0 options:0 animations:^{
         
-        //recognizer.view.transform = CGAffineTransformMakeScale(2, 2);
-        NSLog(@"original: %f", [recognizer.view superview].frame.origin.x);
+        // NSLog(@"original: %f", [recognizer.view superview].frame.origin.x);
         [recognizer.view superview].transform = CGAffineTransformMakeScale(self.view.frame.size.width/recognizer.view.frame.size.width, self.view.frame.size.width/recognizer.view.frame.size.width);
         
-        [recognizer.view superview].layer.position = CGPointMake(358.41954, 286);
+        [recognizer.view superview].layer.position = CGPointMake(358.41954, self.view.frame.size.height/2);
         
-        NSLog(@"After scale: %f", [recognizer.view superview].frame.origin.x);
-        
-        //int index = [[self.articlesView subviews] indexOfObject:recognizer.view];
+       // NSLog(@"After scale: %f", [recognizer.view superview].frame.origin.x);
         
         [self.articlesView setContentOffset:CGPointMake(recognizer.view.frame.origin.x , 0)];
         
-         NSLog(@"current page offset =  %f", recognizer.view.frame.origin.x);
+        [self.articlesView setContentSize:CGSizeMake(self.articlesView.frame.size.width+184, self.articlesView.frame.size.height)];
         
-        
-        //NSLog(@"rate = %f", self.view.frame.size.width/recognizer.view.frame.size.width);
-        
-        
-        
-        //self.articlesView.pagingEnabled = YES;
-        //self.articlesView.clipsToBounds = NO;
+        self.articlesView.clipsToBounds = YES;
         
         
     } completion:^(BOOL finished) {
-        NSLog(@"scroll view's position %f", location.x);
+        
     }];
 }
 
