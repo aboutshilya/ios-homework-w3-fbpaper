@@ -13,10 +13,11 @@
 
 @property (weak, nonatomic) IBOutlet UIView *sectionView;
 @property (weak, nonatomic) IBOutlet UIScrollView *articlesView;
+@property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *panGesture;
 - (IBAction)onPan:(UIPanGestureRecognizer *)sender;
 - (void)createNewsTiles;
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer;
-@property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *panGesture;
+- (void)onPinch:(UIPanGestureRecognizer *)recognizer;
 
 @end
 
@@ -138,6 +139,38 @@
     } completion:^(BOOL finished) {
         
     }];
+    
+    for(int i =0; i < self.articlesView.subviews.count; i++){
+        UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(onPinch:)];
+        
+        [pinch setDelaysTouchesBegan:YES];
+        [self.articlesView.subviews[i] addGestureRecognizer:pinch];
+    }
+    
+}
+
+- (void)onPinch:(UIPanGestureRecognizer *)recognizer{
+    [UIView animateWithDuration:0.5 delay:0 options:0 animations:^{
+        
+        // NSLog(@"original: %f", [recognizer.view superview].frame.origin.x);
+        [recognizer.view superview].transform = CGAffineTransformMakeScale(1, 1);
+        
+        [recognizer.view superview].layer.position = CGPointMake(160, self.view.frame.size.height - recognizer.view.frame.size.height/2);
+        
+        // NSLog(@"After scale: %f", [recognizer.view superview].frame.origin.x);
+        
+        [self.articlesView setContentOffset:CGPointMake(0 , 0)];
+        
+        [self.articlesView setContentSize:CGSizeMake(recognizer.view.frame.size.width*5,recognizer.view.frame.size.height)];
+        
+        self.articlesView.clipsToBounds = YES;
+        
+        
+    } completion:^(BOOL finished) {
+        
+        [self.sectionView addGestureRecognizer:self.panGesture];
+    }];
+    
 }
 
 @end
