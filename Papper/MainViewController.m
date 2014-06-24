@@ -72,42 +72,52 @@
 }
 
 - (IBAction)onPan:(UIPanGestureRecognizer *)gestureRecognizer {
-    //CGPoint point = [panGestureRecognizer locationInView:self.view];
+    //CGPoint point = [gestureRecognizer locationInView:self.view];
     CGPoint velocity = [gestureRecognizer velocityInView:self.view];
     //NSLog(@"velocity Y = %f", velocity.y);
     
     CGPoint translation;
+    CGPoint start;
     
     if([gestureRecognizer state] == UIGestureRecognizerStateBegan){
-        
+        start = [gestureRecognizer locationInView:self.view];
     }else if([gestureRecognizer state] == UIGestureRecognizerStateChanged ){
-        //CGPoint current = [gestureRecognizer locationInView:self.view];
         
-        translation = [gestureRecognizer translationInView:[self.sectionView superview]];
-        NSLog(@"translation y = %f", translation.y );
+       translation = [gestureRecognizer translationInView:[self.sectionView superview]];
+        [gestureRecognizer setTranslation:CGPointZero inView:self.view];
+        NSLog(@"translation y = %f", translation.y);
+        
         float pointY = 0.0;
         if(velocity.y < 0){
-            pointY =  (self.sectionView.center.y + translation.y * fabsf(1/velocity.y));
-            if(pointY < 230) pointY = 230;
+            CGPoint current  = [gestureRecognizer locationInView:self.view];
+            pointY =  self.sectionView.center.y + 30* translation.y/fabsf(current.y - start.y);
+            
+            //if(pointY < 230) pointY = 230;
+            NSLog(@"decrese = %f", translation.y/(current.y - start.y) );
+            
         }else{
             pointY = self.sectionView.center.y + translation.y;
+            
+            //NSLog(@"v > 0, point y = %f", pointY );
         }
         
+        
         [self.sectionView setCenter:CGPointMake(self.sectionView.center.x, pointY)];
-    
         
     }else if([gestureRecognizer state] == UIGestureRecognizerStateEnded ){
       
-        if( velocity.y > 400 || (velocity.y > 0 && self.sectionView.center.y > self.sectionView.frame.size.height + 100)){
+        if( velocity.y > 400 || (velocity.y > 0 && self.sectionView.center.y > self.view.frame.size.height + 200)){
+            NSLog(@"y = %f", self.sectionView.center.y);
+            
             [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 [self.sectionView setCenter:CGPointMake(self.sectionView.center.x , 810)];
             } completion:nil];
         }else if(velocity.y <= 400){
-            if(velocity.y < 0 ){
+            
                 [UIView animateWithDuration: 0.25 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                     [self.sectionView setCenter:CGPointMake(self.sectionView.center.x , self.view.frame.size.height / 2)];
                 } completion:nil];
-            }
+            
         }
         
     }
@@ -116,7 +126,7 @@
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+    //CGPoint location = [recognizer locationInView:[recognizer.view superview]];
     //NSLog(@"target = %@", recognizer.view );
    
     [self.sectionView removeGestureRecognizer:self.panGesture];
